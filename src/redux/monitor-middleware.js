@@ -2,13 +2,13 @@ import {getStackSize} from '../services/measurments';
 
 export function createActionMonitorMiddleware(label, onMeasure) {
   return _store => next => action => {
-    const fullLabel = `${action.type} ${label}`;
+    // const fullLabel = `${action.type} ${label}`;
 
-    const startMark = `${fullLabel} start`;
-    const endMark = `${fullLabel} end`;
-    const markLabel = `${fullLabel}`;
+    // const startMark = `${fullLabel} start`;
+    // const endMark = `${fullLabel} end`;
+    // const markLabel = `${fullLabel}`;
 
-    const start = new Date();
+    // const start = new Date();
 
     // performance.mark(startMark);
 
@@ -17,9 +17,9 @@ export function createActionMonitorMiddleware(label, onMeasure) {
     // performance.mark(endMark);
     // performance.measure(markLabel, startMark, endMark);
 
-    const end = new Date();
+    // const end = new Date();
 
-    onMeasure(end - start);
+    // onMeasure(end - start);
 
     // performance.clearMeasures();
 
@@ -31,8 +31,15 @@ export function createStackSizeMonitorMiddleware(onStackSize) {
   return _store => next => action => {
     const result = next(action);
 
-    onStackSize(getStackSize());
+    // onStackSize(getStackSize());
 
+    return result;
+  };
+}
+export function awat(onExec) {
+  return _store => next => action => {
+    const result = next(action);
+    onExec();
     return result;
   };
 }

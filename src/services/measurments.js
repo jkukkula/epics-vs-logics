@@ -4,17 +4,18 @@ export function getStackSize() {
   // Error.captureStackTrace(e);
   const stackSize = (e.stack && e.stack.split('\n').length) || 0;
 
+
   return stackSize;
 }
 
 export function withMeasuring(job) {
   return (...args) => {
-    window.performance.mark('start');
+    // window.performance.mark('start');
 
     const result = job(...args);
 
-    window.performance.mark('end');
-    window.performance.measure('fibonacci', 'start', 'end');
+    // window.performance.mark('end');
+    // window.performance.measure('fibonacci', 'start', 'end');
 
     return result;
   };

@@ -3,10 +3,15 @@ import { createLogic } from "redux-logic";
 export function createLogics(
   n,
   process,
+  reverse,
   triggerTypeProvider,
   successTypeProvider
 ) {
-  return [...Array(n).keys()].map(n => {
+  let ids = [...Array(n).keys()];
+  if (reverse) {
+    ids = ids.reverse();
+  }
+  return ids.map(n => {
     const triggerType = triggerTypeProvider
       ? triggerTypeProvider(n)
       : `trigger-logic-${n}`;
@@ -14,9 +19,9 @@ export function createLogics(
     const successType = successTypeProvider
       ? successTypeProvider(n)
       : `success-logic-${n}`;
-
+    let proc = n === 0 ? process : () => {};
     return createLogic({
-      process,
+      process: proc,
       name: `logic-${n}`,
       type: triggerType,
       processOptions: {

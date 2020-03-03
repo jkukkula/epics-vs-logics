@@ -4,10 +4,15 @@ import { map } from "rxjs/operators";
 export function createEpics(
   n,
   process,
+  reverse,
   triggerTypeProvider,
   successTypeProvider
 ) {
-  return [...Array(n).keys()].map(n => {
+    let ids = [...Array(n).keys()];
+    if (reverse) {
+        ids = ids.reverse();
+    }
+    return ids.map(n => {
     const triggerType = triggerTypeProvider
       ? triggerTypeProvider(n)
       : `trigger-epic-${n}`;
@@ -19,7 +24,7 @@ export function createEpics(
     return action$ =>
       action$.pipe(
         ofType(triggerType),
-        map(process),
+        map(n==0 ? process : ()=>{}),
         map(payload => ({
           type: successType,
           payload

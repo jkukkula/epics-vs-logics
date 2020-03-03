@@ -1,135 +1,180 @@
+/* eslint-disable */
 import React from 'react';
-import {useExperiments} from '../services/useExperiment';
-import App from './App';
 import {Summary} from './Summary';
-import {fibonacci} from '../services/fibonacci';
+
 import {createStore} from '../redux/createStore';
-import {Text} from 'react-native';
 
-function doSomeWork(n) {
-  const array = [...Array(n).keys()].map(() => Math.ceil(n * Math.random()));
-  array.sort();
+let count=0;
 
-  console.log(array);
+function now(){
+  // if(performance) {
+  //   return performance.now();
+  // } else {
+    return Date.now();
+  // }
 }
 
-function process() {
-  return fibonacci(20);
+function process(a,b,c,d,e,f,g,h) {
+  const start = now();
+  while(now() - start < 200) {
+  }
+  console.log("payload complete "+(now()-start));
+  console.trace();
+  return true;
 }
 
-window.fibonacci = fibonacci;
-
-function getFancyProcess(n) {
-  return () => fibonacci(n);
-}
-
-const experiments = [
+let experiments = [
   {
-    logicsCount: 100,
+    logicsCount: 1,
     epicsCount: 0,
-    process: getFancyProcess(10),
+    process,
+    target: "trigger-logic-0"
   },
   {
-    logicsCount: 100,
-    epicsCount: 0,
-    process: getFancyProcess(20),
+    logicsCount: 0,
+    epicsCount: 1,
+    process,
+    target: "trigger-epic-0"
   },
   {
-    logicsCount: 100,
+    logicsCount: 10,
     epicsCount: 0,
-    process: getFancyProcess(25),
+    process,
+    target: "trigger-logic-0"
+  },
+  {
+    logicsCount: 0,
+    epicsCount: 10,
+    process,
+    target: "trigger-epic-0"
+  },
+  {
+    logicsCount: 5,
+    epicsCount: 5,
+    process,
+    target: "trigger-epic-0"
+  },
+  {
+    logicsCount: 50,
+    epicsCount: 0,
+    process,
+    target: "trigger-logic-0"
+  },
+  {
+    logicsCount: 0,
+    epicsCount: 50,
+    process,
+    target: "trigger-epic-0"
+  },
+  {
+    logicsCount: 25,
+    epicsCount: 25,
+    process,
+    target: "trigger-epic-0"
   },
   {
     logicsCount: 100,
     epicsCount: 0,
     process,
+    target: "trigger-logic-0"
   },
   {
-    logicsCount: 150,
-    epicsCount: 0,
+    logicsCount: 0,
+    epicsCount: 100,
     process,
+    target: "trigger-epic-0"
+  },
+  {
+    logicsCount: 50,
+    epicsCount: 50,
+    process,
+    target: "trigger-epic-0"
   },
   {
     logicsCount: 200,
     epicsCount: 0,
     process,
-  },
-  {
-    logicsCount: 300,
-    epicsCount: 0,
-    process,
-  },
-  {
-    logicsCount: 0,
-    epicsCount: 100,
-    process,
-  },
-  {
-    logicsCount: 0,
-    epicsCount: 150,
-    process,
+    target: "trigger-logic-0"
   },
   {
     logicsCount: 0,
     epicsCount: 200,
     process,
-  },
-  {
-    logicsCount: 0,
-    epicsCount: 300,
-    process,
+    target: "trigger-epic-0"
   },
   {
     logicsCount: 100,
-    epicsCount: 0,
-    process,
-  },
-  {
-    logicsCount: 80,
-    epicsCount: 20,
-    process,
-  },
-  {
-    logicsCount: 60,
-    epicsCount: 40,
-    process,
-  },
-  {
-    logicsCount: 40,
-    epicsCount: 60,
-    process,
-  },
-  {
-    logicsCount: 20,
-    epicsCount: 80,
-    process,
-  },
-  {
-    logicsCount: 0,
     epicsCount: 100,
     process,
+    target: "trigger-epic-0"
   },
 ];
 
-function performExperiments() {
-  const summary = [];
 
-  console.log('...experiments', experiments.length);
 
-  experiments.forEach((config, index) => {
-    const store = createStore(config, index, results =>
-      summary.push({config, results}),
-    );
+export class Experiment extends React.Component{
 
-    // store.dispatch({type: 'trigger-logic-0'});
-    store.dispatch({type: 'trigger-epic-0'});
-  });
+  constructor(props) {
+    super(props);
+    this.state = {summary: []};
+  }
+  componentDidMount(): void {
+    this.performExperiments();
+  }
 
-  return summary;
-}
+  performExperiments() {
 
-export function Experiment() {
-  const summary = performExperiments();
+    let reversedExperiments = experiments.map(e=>Object.assign({}, e, {reverse:true}))
+    let exps = [];
+    for(let i = 0;i<reversedExperiments.length;i++) {
+      exps.push(experiments[i]);
+      // exps.push(experiments[i]);
+      // exps.push(experiments[i]);
+      // exps.push(reversedExperiments[i]);
+      // exps.push(reversedExperiments[i]);
+      exps.push(reversedExperiments[i]);
+    }
+    experiments = exps;
 
-  return <Summary summary={summary} />;
+    console.log('...experiments', experiments.length);
+    const start = now();
+    let prev = now();
+    let idx = 0;
+    const next = () => {
+      let config = experiments[idx];
+      const thisStart = now();
+      const store = createStore(config, idx, results => {
+        console.log("payload returned");
+        let thisEnd = now() - 200;
+        let duration = results.duration - 200;
+        results.duration = (thisEnd - thisStart) + '/' + (thisEnd - start) + (config.reverse?"r":"");
+        prev = thisEnd;
+        let summary = this.state.summary;
+        summary.push({config, results});
+        this.setState({summary});
+        idx++;
+        if(idx < experiments.length) {
+          setImmediate(next);
+          //next();
+        }
+      });
+      store.subscribe((a,b,c,d,e,f,g,h)=>{
+        console.log("store subscribe event");
+      });
+      const t = config.target ? config.target : "trigger-epic-0";
+      store.dispatch({type: t});
+
+
+      return store
+    };
+    let store = next();
+    // store.dispatch({type: 'trigger-epic-0'});
+  }
+
+
+  render() {
+    return <Summary summary={this.state.summary} />;
+  }
+
+
 }

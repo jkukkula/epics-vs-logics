@@ -7,17 +7,18 @@ function Row({children}) {
 
 function Item({children}) {
   return (
-    <View style={{width: 100, height: 30, marginHorizontal: 40}}>
+    <View style={{width: 200, height: 30, marginHorizontal: 40}}>
       <Text>{children}</Text>
     </View>
   );
 }
 
 export function Summary({summary}) {
+    console.log("render summary");
   return (
-    <ScrollView>
+    <ScrollView style={{paddingTop: 20}}>
       <Row>
-        <Item>exp. #</Item>
+        {/*<Item>exp. #</Item>*/}
         <Item>logics count</Item>
         <Item>epics count</Item>
         <Item>duration</Item>
@@ -26,7 +27,7 @@ export function Summary({summary}) {
 
       {summary.map(({config, results}, index) => (
         <Row key={index}>
-          <Item>{index}</Item>
+          {/*<Item>{index}</Item>*/}
           <Item>{config.logicsCount}</Item>
           <Item>{config.epicsCount}</Item>
           <Item>{results.duration}</Item>
